@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from './task.service';
 import { Task } from './models/task.model';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-task-list',
