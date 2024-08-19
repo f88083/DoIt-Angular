@@ -16,10 +16,13 @@ import { CreateTaskDialogComponent } from './task-create.component';
       <ul class="task-list">
         <li *ngFor="let task of tasks" class="task-item">
           <div class="task-header">
-            <label>
-              <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)">
+            <div class="task-title">
+              <input type="checkbox" 
+                     [checked]="task.completed" 
+                     (change)="toggleTask(task)"
+                     class="task-checkbox">
               <span [class.completed]="task.completed">{{ task.title }}</span>
-            </label>
+            </div>
             <button (click)="task.showDescription = !task.showDescription">
               {{ task.showDescription ? '▲' : '▼' }}
             </button>
@@ -47,6 +50,15 @@ import { CreateTaskDialogComponent } from './task-create.component';
       padding: 10px 15px; 
       border-radius: 4px; 
       cursor: pointer; 
+    }
+    .task-title {
+      display: flex;
+      align-items: center;
+    }
+    .task-checkbox {
+      margin-right: 10px;
+      width: 20px;
+      height: 20px;
     }
   `
   ],
