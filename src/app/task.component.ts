@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from './task.service';
-import { Task } from './models/task.model';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Task, TaskCreateRequest } from './models/task.model';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateTaskDialogComponent } from './task-create.component';
 
 @Component({
   selector: 'app-task-list',
@@ -50,12 +51,19 @@ import { MatDialogRef } from '@angular/material/dialog';
   `
   ],
   standalone: true,
-  imports: [CommonModule]
+  imports: [
+    CommonModule, 
+    MatDialogModule,
+    CreateTaskDialogComponent,
+  ]
 })
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
 
-  constructor(private taskService: TaskService) { }
+  constructor(
+    private taskService: TaskService,
+    private dialog: MatDialog
+  ) { }
 
   // Load tasks when the component is initialized
   ngOnInit() {
@@ -79,7 +87,26 @@ export class TaskListComponent implements OnInit {
   }
 
   openCreateTaskDialog() {
-    // Implement the logic to open a dialog or navigate to a create task page
-    console.log('Open create task dialog');
+    // open a dialog to create a new task
+    const dialogRef = this.dialog.open(CreateTaskDialogComponent, {
+      width: '400px',
+      // You can add more dialog configuration here
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Create a new task
+        const newTask: TaskCreateRequest = {
+          title: result.title,
+          description: result.description,
+          status: result.status,
+          dueDate: result.dueDate
+        };
+        
+        this.taskService.createTask(newTask).subscribe(() => {
+          this.loadTasks();
+        });
+      }
+    });
   }
 }
