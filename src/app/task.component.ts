@@ -4,6 +4,7 @@ import { TaskService } from './task.service';
 import { Task, TaskCreateRequest } from './models/task.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskDialogComponent } from './task-create.component';
+import { EditTaskDialogComponent } from './task-edit.component';
 
 @Component({
   selector: 'app-task-list',
@@ -20,10 +21,11 @@ import { CreateTaskDialogComponent } from './task-create.component';
               <input type="checkbox" 
                      [checked]="task.completed" 
                      (change)="toggleTask(task)"
+                     (click)="$event.stopPropagation()"
                      class="task-checkbox">
-              <span [class.completed]="task.completed">{{ task.title }}</span>
+              <span [class.completed]="task.completed" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
             </div>
-            <button (click)="task.showDescription = !task.showDescription">
+            <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
               {{ task.showDescription ? '▲' : '▼' }}
             </button>
           </div>
@@ -67,6 +69,7 @@ import { CreateTaskDialogComponent } from './task-create.component';
     CommonModule, 
     MatDialogModule,
     CreateTaskDialogComponent,
+    EditTaskDialogComponent,
   ]
 })
 export class TaskListComponent implements OnInit {
@@ -117,6 +120,22 @@ export class TaskListComponent implements OnInit {
         
         this.taskService.createTask(newTask).subscribe(() => {
           this.loadTasks();
+        });
+      }
+    });
+  }
+
+  openEditTaskDialog(task: Task) {
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {
+      width: '400px',
+      data: { ...task } // Create a copy of the task to avoid direct mutation
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Update the task
+        this.taskService.updateTask(result.taskId, result).subscribe(() => {
+          this.loadTasks(); // Reload tasks after update
         });
       }
     });
