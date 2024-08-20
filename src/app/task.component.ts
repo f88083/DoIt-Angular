@@ -19,11 +19,11 @@ import { EditTaskDialogComponent } from './task-edit.component';
           <div class="task-header">
             <div class="task-title">
               <input type="checkbox" 
-                     [checked]="task.completed" 
-                     (change)="toggleTask(task)"
+                     [checked]="task.status" 
+                     (change)="completeTask(task)"
                      (click)="$event.stopPropagation()"
                      class="task-checkbox">
-              <span [class.completed]="task.completed" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
+              <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}, ID: {{ task.taskId }}</span>
             </div>
             <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
               {{ task.showDescription ? '▲' : '▼' }}
@@ -42,7 +42,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
     .task-list { list-style-type: none; padding: 0; }
     .task-item { padding: 10px 0; border-bottom: 1px solid #eee; }
     .task-header { display: flex; justify-content: space-between; align-items: center; }
-    .completed { text-decoration: line-through; color: #888; }
+    .status { text-decoration: line-through; color: #888; }
     .task-description { margin-top: 5px; font-size: 0.9em; color: #666; }
     .header { display: flex; justify-content: space-between; align-items: center; }
     .create-button { 
@@ -66,7 +66,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
   ],
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     MatDialogModule,
     CreateTaskDialogComponent,
     EditTaskDialogComponent,
@@ -83,6 +83,7 @@ export class TaskListComponent implements OnInit {
   // Load tasks when the component is initialized
   ngOnInit() {
     this.loadTasks();
+    setInterval(() => this.deleteCompletedTasks(), 5000); // Check every 5 seconds
   }
 
   loadTasks() {
@@ -97,8 +98,38 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  toggleTask(task: Task) {
-    task.completed = !task.completed;
+  // Mark task as completed or not completed
+  completeTask(task: Task) {
+    task.status = task.status === 0 ? 1 : 0;
+    this.taskService.updateTask(task.taskId, task).subscribe({
+      next: (updatedTask) => {
+        console.log('Task updated:', updatedTask);
+        const index = this.tasks.findIndex(t => t.taskId === updatedTask.taskId);
+        if (index !== -1) {
+          this.tasks[index] = updatedTask;
+        }
+      },
+      error: (error) => {
+        console.error('Error updating task:', error);
+        task.status = task.status === 0 ? 1 : 0;
+      }
+    });
+  }
+
+  // Actually delete completed tasks
+  deleteCompletedTasks() {
+    const completedTasks = this.tasks.filter(task => task.status === 1);
+    completedTasks.forEach(task => {
+      this.taskService.deleteTask(task.taskId).subscribe({
+        next: () => {
+          console.log(`Task ${task.taskId} deleted successfully`);
+          this.tasks = this.tasks.filter(t => t.taskId !== task.taskId);
+        },
+        error: (error) => {
+          console.error(`Error deleting task ${task.taskId}:`, error);
+        }
+      });
+    });
   }
 
   openCreateTaskDialog() {
@@ -117,8 +148,9 @@ export class TaskListComponent implements OnInit {
           status: result.status,
           dueDate: result.dueDate
         };
-        
+
         this.taskService.createTask(newTask).subscribe(() => {
+          //TODO: handle potential error
           this.loadTasks();
         });
       }
@@ -135,6 +167,7 @@ export class TaskListComponent implements OnInit {
       if (result) {
         // Update the task
         this.taskService.updateTask(result.taskId, result).subscribe(() => {
+          //TODO: handle potential error
           this.loadTasks(); // Reload tasks after update
         });
       }
