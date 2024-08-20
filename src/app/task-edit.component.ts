@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
+import moment from 'moment';
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -54,6 +55,8 @@ export class EditTaskDialogComponent {
   }
 
   onSave(): void {
+    // FIXME: timezone isn't correctly set, maybe it's backend problem
+    this.task.dueDate = moment(this.task.dueDate).format('YYYY-MM-DDTHH:mm:ss');
     this.dialogRef.close(this.task);
   }
 }

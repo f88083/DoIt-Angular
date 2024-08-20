@@ -7,6 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { TaskCreateRequest } from './models/task.model';
 import { FormsModule } from '@angular/forms';
+import moment from 'moment';
 
 @Component({
   selector: 'app-create-task-dialog',
@@ -58,6 +59,8 @@ export class CreateTaskDialogComponent {
   }
 
   onSubmit(): void {
+    // TODO: define the date format as a constant in a separate file
+    this.task.dueDate = moment(this.task.dueDate).format('YYYY-MM-DDTHH:mm:ss');
     this.dialogRef.close(this.task);
   }
 }
