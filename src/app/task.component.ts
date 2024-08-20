@@ -100,17 +100,21 @@ export class TaskListComponent implements OnInit {
 
   // Mark task as completed or not completed
   completeTask(task: Task) {
+    // Change the status of the task
     task.status = task.status === 0 ? 1 : 0;
     this.taskService.updateTask(task.taskId, task).subscribe({
       next: (updatedTask) => {
         console.log('Task updated:', updatedTask);
+        // Update the task in the local array
         const index = this.tasks.findIndex(t => t.taskId === updatedTask.taskId);
+        // If the task is found, update it
         if (index !== -1) {
           this.tasks[index] = updatedTask;
         }
       },
       error: (error) => {
         console.error('Error updating task:', error);
+        // Revert the change if the update fails
         task.status = task.status === 0 ? 1 : 0;
       }
     });
