@@ -11,7 +11,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
   template: `
     <div class="todo-container">
       <div class="header">
-        <h1>My Tasks</h1>
+        <h1>Do It!</h1>
         <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
       </div>
       <ul class="task-list">
