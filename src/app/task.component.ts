@@ -23,7 +23,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
                      (change)="completeTask(task)"
                      (click)="$event.stopPropagation()"
                      class="task-checkbox">
-              <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}, ID: {{ task.taskId }}</span>
+              <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
             </div>
             <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
               {{ task.showDescription ? '▲' : '▼' }}
