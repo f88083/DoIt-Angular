@@ -125,7 +125,7 @@ export class TaskListComponent implements OnInit {
   }
 
   sortByDate(tasks: Task[]) {
-    tasks.sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }
 
   // Mark task as completed or not completed
@@ -183,9 +183,14 @@ export class TaskListComponent implements OnInit {
           dueDate: result.dueDate
         };
 
-        this.taskService.createTask(newTask).subscribe(() => {
-          //TODO: handle potential error
-          this.loadTasks();
+        this.taskService.createTask(newTask).subscribe({
+          next: () => {
+            console.log(`Task has been created successfully`);
+            this.loadTasks();
+          },
+          error: (error) => {
+            console.error(`Failed to create the new task...`, error);
+          }
         });
       }
     });
@@ -200,9 +205,14 @@ export class TaskListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Update the task
-        this.taskService.updateTask(result.taskId, result).subscribe(() => {
-          //TODO: handle potential error
-          this.loadTasks(); // Reload tasks after update
+        this.taskService.updateTask(result.taskId, result).subscribe({
+          next: () => {
+            console.log(`Task has been edited successfully`);
+            this.loadTasks(); // Reload tasks after edited
+          },
+          error: (error) => {
+            console.error(`Failed to update the task with taskId: ${result.taskId}...`, error);
+          }
         });
       }
     });
