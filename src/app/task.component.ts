@@ -26,8 +26,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
                      class="task-checkbox"
                      color="primary">
               </mat-checkbox>
-              <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
-              <span>{{ task.dueDate | date }}</span>
+              <div class="task-info">
+                <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
+                <span class="due-date">{{ task.dueDate | date }}</span>
+              </div>
             </div>
             <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
               {{ task.showDescription ? '▲' : '▼' }}
@@ -63,6 +65,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     }
     .task-checkbox {
       margin-right: 10px;
+    }
+    .task-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .due-date {
+      font-size: 0.8em;
+      color: #888;
+      margin-top: 2px;
     }
   `
   ],
