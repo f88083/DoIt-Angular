@@ -44,8 +44,6 @@ import { MatIconModule } from '@angular/material/icon';
             </button>
           </div>
           <p *ngIf="task.showDescription" class="task-description">{{ task.description }}</p>
-          <p *ngIf="task.showDescription" class="task-description">{{ task.status }}</p>
-          <p *ngIf="task.showDescription" class="task-description">{{ task.dueDate | date }}</p>
         </li>
       </ul>
     </div>
