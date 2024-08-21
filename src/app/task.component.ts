@@ -23,7 +23,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
                      [checked]="task.status === 1" 
                      (change)="completeTask(task)"
                      (click)="$event.stopPropagation()"
-                     class="task-checkbox">
+                     class="task-checkbox"
+                     color="primary">
               </mat-checkbox>
               <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
               <span>{{ task.dueDate | date }}</span>
