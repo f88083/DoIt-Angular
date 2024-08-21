@@ -5,6 +5,7 @@ import { Task, TaskCreateRequest } from './models/task.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskDialogComponent } from './task-create.component';
 import { EditTaskDialogComponent } from './task-edit.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-task-list',
@@ -18,12 +19,14 @@ import { EditTaskDialogComponent } from './task-edit.component';
         <li *ngFor="let task of tasks" class="task-item">
           <div class="task-header">
             <div class="task-title">
-              <input type="checkbox" 
-                     [checked]="task.status" 
+              <mat-checkbox
+                     [checked]="task.status === 1" 
                      (change)="completeTask(task)"
                      (click)="$event.stopPropagation()"
                      class="task-checkbox">
+              </mat-checkbox>
               <span [class.status]="task.status" (click)="openEditTaskDialog(task)">{{ task.title }}</span>
+              <span>{{ task.dueDate | date }}</span>
             </div>
             <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
               {{ task.showDescription ? '▲' : '▼' }}
@@ -59,8 +62,6 @@ import { EditTaskDialogComponent } from './task-edit.component';
     }
     .task-checkbox {
       margin-right: 10px;
-      width: 20px;
-      height: 20px;
     }
   `
   ],
@@ -70,6 +71,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
     MatDialogModule,
     CreateTaskDialogComponent,
     EditTaskDialogComponent,
+    MatCheckboxModule
   ]
 })
 export class TaskListComponent implements OnInit {
