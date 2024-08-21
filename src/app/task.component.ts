@@ -115,12 +115,17 @@ export class TaskListComponent implements OnInit {
     this.taskService.getAllTasks().subscribe({
       next: (data) => {
         this.tasks = data;
-        console.log('Tasks loaded:', this.tasks);
+        this.sortByDate(this.tasks);
+        console.log('Tasks loaded and sorted:', this.tasks);
       },
       error: (error) => {
         console.error('Error fetching tasks:', error);
       }
     });
+  }
+
+  sortByDate(tasks: Task[]) {
+    tasks.sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }
 
   // Mark task as completed or not completed
