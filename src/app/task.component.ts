@@ -6,6 +6,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskDialogComponent } from './task-create.component';
 import { EditTaskDialogComponent } from './task-edit.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-task-list',
@@ -31,8 +33,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
                 <span class="due-date">{{ task.dueDate | date }}</span>
               </div>
             </div>
-            <button (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
-              {{ task.showDescription ? '▲' : '▼' }}
+            <button class="task-show-description-btn" mat-icon-button
+                    (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
+                <mat-icon *ngIf="task.showDescription; else nodescription">expand_less</mat-icon>
+                <ng-template #nodescription>
+                  <mat-icon>
+                    expand_more
+                  </mat-icon>
+                </ng-template>
             </button>
           </div>
           <p *ngIf="task.showDescription" class="task-description">{{ task.description }}</p>
@@ -75,6 +83,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
       color: #888;
       margin-top: 2px;
     }
+    .task-show-description-btn{
+      
+    }
   `
   ],
   standalone: true,
@@ -83,7 +94,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatDialogModule,
     CreateTaskDialogComponent,
     EditTaskDialogComponent,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule
   ]
 })
 export class TaskListComponent implements OnInit {
