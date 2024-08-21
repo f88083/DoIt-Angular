@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { TaskCreateRequest } from './models/task.model';
 import { FormsModule } from '@angular/forms';
 import moment from 'moment';
+import { GlobalConstants } from './shared/global-constants';
 
 @Component({
   selector: 'app-create-task-dialog',
@@ -59,8 +60,9 @@ export class CreateTaskDialogComponent {
   }
 
   onSubmit(): void {
+    // FIXME: required title and dueDate non-empty
     // TODO: define the date format as a constant in a separate file
-    this.task.dueDate = moment(this.task.dueDate).format('YYYY-MM-DDTHH:mm:ss');
+    this.task.dueDate = moment(this.task.dueDate).format(GlobalConstants.DATE_TIME_FORMAT);
     this.dialogRef.close(this.task);
   }
 }

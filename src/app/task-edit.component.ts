@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import moment from 'moment';
+import { GlobalConstants } from './shared/global-constants';
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -56,7 +57,7 @@ export class EditTaskDialogComponent {
 
   onSave(): void {
     // FIXME: timezone isn't correctly set, maybe it's backend problem
-    this.task.dueDate = moment(this.task.dueDate).format('YYYY-MM-DDTHH:mm:ss');
+    this.task.dueDate = moment(this.task.dueDate).format(GlobalConstants.DATE_TIME_FORMAT);
     this.dialogRef.close(this.task);
   }
 }
