@@ -22,7 +22,9 @@ import { GlobalConstants } from './shared/global-constants';
         <textarea matInput placeholder="Description" [(ngModel)]="task.description"></textarea>
       </mat-form-field>
       <mat-form-field>
-        <input matInput [matDatepicker]="picker" placeholder="Due Date" [(ngModel)]="task.dueDate">
+        <mat-label>Due date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="task.dueDate">
+        <mat-hint>MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
