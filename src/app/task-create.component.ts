@@ -22,7 +22,7 @@ import { GlobalConstants } from './shared/global-constants';
         <textarea matInput placeholder="Description" [(ngModel)]="task.description"></textarea>
       </mat-form-field>
       <mat-form-field>
-        <input matInput [matDatepicker]="picker" placeholder="Due Date" [(ngModel)]="task.dueDate">
+        <input matInput [matDatepicker]="picker" placeholder="Due Date" [(ngModel)]="task.dueDate" [value]="task.dueDate">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
@@ -50,7 +50,7 @@ export class CreateTaskDialogComponent {
     title: '',
     description: '',
     status: 0,
-    dueDate: '',
+    dueDate: moment().format(GlobalConstants.DATE_TIME_FORMAT),
   };
 
   constructor(public dialogRef: MatDialogRef<CreateTaskDialogComponent>) {}
