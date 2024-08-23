@@ -63,7 +63,6 @@ export class CreateTaskDialogComponent {
 
   onSubmit(): void {
     // FIXME: required title and dueDate non-empty
-    // TODO: define the date format as a constant in a separate file
     this.task.dueDate = moment(this.task.dueDate).format(GlobalConstants.DATE_TIME_FORMAT);
     this.dialogRef.close(this.task);
   }
