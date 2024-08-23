@@ -4,6 +4,7 @@ export interface Task {
     description: string;
     status: number;
     dueDate: string;
+    updateDate: string;
     completed: boolean;
     showDescription?: boolean;
 }

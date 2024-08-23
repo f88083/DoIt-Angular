@@ -8,6 +8,7 @@ import { EditTaskDialogComponent } from './task-edit.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-task-list',
@@ -18,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
         <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
       </div>
       <ul class="task-list">
-        <li *ngFor="let task of tasks" class="task-item">
+        <li *ngFor="let task of activeTasks" class="task-item">
           <div class="task-header">
             <div class="task-title">
               <mat-checkbox
@@ -46,6 +47,31 @@ import { MatIconModule } from '@angular/material/icon';
           <p *ngIf="task.showDescription" class="task-description">{{ task.description }}</p>
         </li>
       </ul>
+      <mat-expansion-panel *ngIf="completedTasks.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Completed Tasks</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ul class="task-list">
+          <li *ngFor="let task of completedTasks" class="task-item completed">
+            <!-- Similar content as active tasks, but without checkbox -->
+            <div class="task-header">
+              <div class="task-title">
+                <mat-checkbox
+                      [checked]="task.status === 1" 
+                      (change)="completeTask(task)"
+                      (click)="$event.stopPropagation()"
+                      class="task-checkbox"
+                      color="primary">
+                </mat-checkbox>
+                <div class="task-info">
+                  <span class="status">{{ task.title }}</span>
+                  <span class="due-date">Completed: {{ task.updateDate | date }}</span>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </mat-expansion-panel>
     </div>
   `,
   styles: [
@@ -94,11 +120,14 @@ import { MatIconModule } from '@angular/material/icon';
     EditTaskDialogComponent,
     MatCheckboxModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatExpansionModule
   ]
 })
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
+  activeTasks: Task[] = [];
+  completedTasks: Task[] = [];
 
   constructor(
     private taskService: TaskService,
@@ -108,14 +137,14 @@ export class TaskListComponent implements OnInit {
   // Load tasks when the component is initialized
   ngOnInit() {
     this.loadTasks();
-    setInterval(() => this.deleteCompletedTasks(), 5000); // Check every 5 seconds
+    // setInterval(() => this.deleteCompletedTasks(), 5000); // Check every 5 seconds
   }
 
   loadTasks() {
     this.taskService.getAllTasks().subscribe({
       next: (data) => {
         this.tasks = data;
-        this.sortByDate(this.tasks);
+        this.separateTasks();
         console.log('Tasks loaded and sorted:', this.tasks);
       },
       error: (error) => {
@@ -124,9 +153,21 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  separateTasks() { // TODO: Could be more efficient, unecessary to filter again
+    this.activeTasks = this.tasks.filter(task => task.status === 0);
+    this.completedTasks = this.tasks.filter(task => task.status === 1);
+    this.sortByDate(this.activeTasks);
+    this.sortByUpdateTime(this.completedTasks);
+  }
+
   sortByDate(tasks: Task[]) {
     tasks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }
+
+  sortByUpdateTime(tasks: Task[]) {
+    tasks.sort((a, b) => new Date(b.updateDate).getTime() - new Date(a.updateDate).getTime());
+  }
+
 
   // Mark task as completed or not completed
   completeTask(task: Task) {
@@ -141,6 +182,7 @@ export class TaskListComponent implements OnInit {
         if (index !== -1) {
           this.tasks[index] = updatedTask;
         }
+        this.separateTasks();
       },
       error: (error) => {
         console.error('Error updating task:', error);
