@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from './task.service';
-import { Task, TaskCreateRequest } from './models/task.model';
+import { Task, TaskCreateRequest, taskStatus } from './models/task.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskDialogComponent } from './task-create.component';
 import { EditTaskDialogComponent } from './task-edit.component';
@@ -23,7 +23,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
           <div class="task-header">
             <div class="task-title">
               <mat-checkbox
-                     [checked]="task.status === 1" 
+                     [checked]="task.status === taskStatus.completed" 
                      (change)="completeTask(task)"
                      (click)="$event.stopPropagation()"
                      class="task-checkbox"
@@ -57,7 +57,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
             <div class="task-header">
               <div class="task-title">
                 <mat-checkbox
-                      [checked]="task.status === 1" 
+                      [checked]="task.status === taskStatus.completed" 
                       (change)="completeTask(task)"
                       (click)="$event.stopPropagation()"
                       class="task-checkbox"
@@ -128,6 +128,7 @@ export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
   activeTasks: Task[] = [];
   completedTasks: Task[] = [];
+  taskStatus = taskStatus;
 
   constructor(
     private taskService: TaskService,
@@ -154,8 +155,8 @@ export class TaskListComponent implements OnInit {
   }
 
   separateTasks() { // TODO: Could be more efficient, unecessary to filter again
-    this.activeTasks = this.tasks.filter(task => task.status === 0);
-    this.completedTasks = this.tasks.filter(task => task.status === 1);
+    this.activeTasks = this.tasks.filter(task => task.status === taskStatus.pending);
+    this.completedTasks = this.tasks.filter(task => task.status === taskStatus.completed);
     this.sortByDate(this.activeTasks);
     this.sortByUpdateTime(this.completedTasks);
   }
@@ -172,7 +173,7 @@ export class TaskListComponent implements OnInit {
   // Mark task as completed or not completed
   completeTask(task: Task) {
     // Change the status of the task
-    task.status = task.status === 0 ? 1 : 0;
+    task.status = task.status === taskStatus.pending ? taskStatus.completed : taskStatus.pending;
     this.taskService.updateTask(task.taskId, task).subscribe({
       next: (updatedTask) => {
         console.log('Task updated:', updatedTask);
@@ -187,14 +188,14 @@ export class TaskListComponent implements OnInit {
       error: (error) => {
         console.error('Error updating task:', error);
         // Revert the change if the update fails
-        task.status = task.status === 0 ? 1 : 0;
+        task.status = task.status === taskStatus.pending ? taskStatus.completed : taskStatus.pending;
       }
     });
   }
 
   // Actually delete completed tasks
   deleteCompletedTasks() {
-    const completedTasks = this.tasks.filter(task => task.status === 1);
+    const completedTasks = this.tasks.filter(task => task.status === taskStatus.completed);
     completedTasks.forEach(task => {
       this.taskService.deleteTask(task.taskId).subscribe({
         next: () => {
