@@ -15,3 +15,8 @@ export interface TaskCreateRequest {
   status: number;
   dueDate: string;
 }
+
+export enum taskStatus {
+  pending = 0,
+  completed = 1,
+}
