@@ -7,9 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
-import moment from 'moment';
 import { GlobalConstants } from './shared/global-constants';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -50,11 +49,15 @@ import { CommonModule } from '@angular/common';
     MatDatepickerModule,
     MatButtonModule,
   ],
+  providers: [
+    DatePipe
+  ]
 })
 export class EditTaskDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<EditTaskDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public task: Task
+    @Inject(MAT_DIALOG_DATA) public task: Task,
+    private datePipe: DatePipe
   ) { }
 
   onCancel(): void {
@@ -62,7 +65,7 @@ export class EditTaskDialogComponent {
   }
 
   onSave(): void {
-    this.task.dueDate = moment(this.task.dueDate).format(GlobalConstants.DATE_TIME_FORMAT);
+    this.task.dueDate = this.datePipe.transform(this.task.dueDate, GlobalConstants.DATE_TIME_FORMAT) || '';
     this.dialogRef.close(this.task);
   }
 }
