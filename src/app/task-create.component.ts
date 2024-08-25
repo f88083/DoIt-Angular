@@ -7,9 +7,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatButtonModule } from '@angular/material/button';
 import { TaskCreateRequest } from './models/task.model';
 import { FormsModule } from '@angular/forms';
-import moment from 'moment';
 import { GlobalConstants } from './shared/global-constants';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-create-task-dialog',
@@ -50,23 +49,30 @@ import { CommonModule } from '@angular/common';
     FormsModule,
   ],
   standalone: true,
+  providers: [
+    DatePipe
+  ]
 })
 export class CreateTaskDialogComponent {
   task: TaskCreateRequest = {
     title: '',
     description: '',
     status: 0,
-    dueDate: moment().format(GlobalConstants.DATE_TIME_FORMAT),
+    dueDate: '',
   };
 
-  constructor(public dialogRef: MatDialogRef<CreateTaskDialogComponent>) { }
+  constructor(public dialogRef: MatDialogRef<CreateTaskDialogComponent>, private datePipe: DatePipe) {
+    // Init. current date
+    this.task.dueDate = this.datePipe.transform(Date.now(), GlobalConstants.DATE_TIME_FORMAT) || '';
+  }
 
   onCancel(): void {
     this.dialogRef.close();
   }
 
   onSubmit(): void {
-    this.task.dueDate = moment(this.task.dueDate).format(GlobalConstants.DATE_TIME_FORMAT);
+    // Change to timezone Asia/Taipei
+    this.task.dueDate = this.datePipe.transform(this.task.dueDate, GlobalConstants.DATE_TIME_FORMAT) || '';
     this.dialogRef.close(this.task);
   }
 }
