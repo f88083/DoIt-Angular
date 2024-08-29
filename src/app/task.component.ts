@@ -65,7 +65,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
                 </mat-checkbox>
                 <div class="task-info">
                   <span class="status">{{ task.title }}</span>
-                  <span class="due-date">Completed: {{ task.updateDate | date }}</span>
+                  <span class="due-date">{{ task.dueDate | date }}</span>
                 </div>
               </div>
             </div>
