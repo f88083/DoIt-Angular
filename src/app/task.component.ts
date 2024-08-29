@@ -34,15 +34,20 @@ import { MatExpansionModule } from '@angular/material/expansion';
                 <span class="due-date">{{ task.dueDate | date }}</span>
               </div>
             </div>
-            <button class="task-show-description-btn" mat-icon-button
-                    (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
-                <mat-icon *ngIf="task.showDescription; else nodescription">expand_less</mat-icon>
-                <ng-template #nodescription>
-                  <mat-icon>
-                    expand_more
-                  </mat-icon>
-                </ng-template>
-            </button>
+            <div>
+              <button class="task-delete-btn" mat-icon-button (click)="deleteTask(task)">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button class="task-show-description-btn" mat-icon-button
+                      (click)="task.showDescription = !task.showDescription; $event.stopPropagation()">
+                  <mat-icon *ngIf="task.showDescription; else nodescription">expand_less</mat-icon>
+                  <ng-template #nodescription>
+                    <mat-icon>
+                      expand_more
+                    </mat-icon>
+                  </ng-template>
+              </button>
+            </div>
           </div>
           <p *ngIf="task.showDescription" class="task-description">{{ task.description }}</p>
         </li>
@@ -257,6 +262,19 @@ export class TaskListComponent implements OnInit {
             console.error(`Failed to update the task with taskId: ${result.taskId}...`, error);
           }
         });
+      }
+    });
+  }
+
+  deleteTask(task: Task) {
+    this.taskService.deleteTask(task.taskId).subscribe({
+      next: () => {
+        console.log(`Task: "${task.title}" deleted successfully`);
+        this.tasks = this.tasks.filter(t => t.taskId !== task.taskId);
+        this.separateTasks();
+      },
+      error: (error) => {
+        console.error(`Error deleting task ${task.taskId}:`, error);
       }
     });
   }
