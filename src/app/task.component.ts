@@ -9,6 +9,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { AuthService } from './auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task-list',
@@ -16,7 +18,10 @@ import { MatExpansionModule } from '@angular/material/expansion';
     <div class="todo-container">
       <div class="header">
         <h1>Do It!</h1>
-        <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
+        <div>
+          <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
+          <button mat-button (click)="logout()">Logout</button>
+        </div>
       </div>
       <ul class="task-list">
         <li *ngFor="let task of activeTasks" class="task-item">
@@ -137,7 +142,9 @@ export class TaskListComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   // Load tasks when the component is initialized
@@ -277,5 +284,10 @@ export class TaskListComponent implements OnInit {
         console.error(`Error deleting task ${task.taskId}:`, error);
       }
     });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
