@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -67,7 +67,7 @@ export class LoginComponent {
           this.snackBar.open(
             'Login successfully',
             undefined,
-            {duration: this.duration * 1000}
+            { duration: this.duration * 1000 }
           );
           this.router.navigate(['/tasks']);
         } else {
