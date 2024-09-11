@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { TaskListComponent } from './task.component';
 import { RouterOutlet } from '@angular/router';
 
 @Component({

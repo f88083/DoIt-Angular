@@ -286,6 +286,7 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  // TODO: Should logged out (remove the token from the localstorage) automatically if the token has expired
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
