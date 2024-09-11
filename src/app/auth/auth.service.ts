@@ -15,13 +15,13 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }, {observe: 'response'}).pipe(
       tap((response) => {
-        if (response.token) {
-          this.token = response.token;
+        if (response.body?.token) {
+          this.token = response.body.token;
           this.isAuthenticatedSubject.next(true);
           // TODO: Use cookie
-          localStorage.setItem('token', response.token);
+          localStorage.setItem('token', response.body.token);
         }
       })
     );

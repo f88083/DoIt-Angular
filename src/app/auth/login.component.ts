@@ -40,16 +40,25 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onSubmit() {
     this.authService.login(this.username, this.password).subscribe({
-      next: () => {
-        this.router.navigate(['/tasks']);
+      next: (response) => {
+        if (response.status === 200 && !!response.body.token) {
+          this.router.navigate(['/tasks']);
+        } else {
+          console.error('Login failed: Invalid response');
+        }
       },
       error: (error) => {
-        console.error('Login failed', error);
-        // Handle login error (show message to user)
+        if (error.status === 401) {
+          console.error('Login failed: Invalid username or password');
+          // Handle invalid credentials (show message to user)
+        } else {
+          console.error('Login failed', error);
+          // Handle other errors (show message to user)
+        }
       }
     });
   }
