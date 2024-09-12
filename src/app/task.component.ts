@@ -166,9 +166,7 @@ export class TaskListComponent implements OnInit {
       error: (error) => {
         // 401, token has expired
         if (error.status == 401) {
-          this.logout();
-          this.router.navigate(['/login']);
-          showSnackbar(this.snackBar, 'Your login session has expired, please login again.');
+          this.logoutWhenTokenExpired();
         }
         console.error('Error fetching tasks:', error);
       }
@@ -210,23 +208,12 @@ export class TaskListComponent implements OnInit {
         console.error('Error updating task:', error);
         // Revert the change if the update fails
         task.status = task.status === taskStatus.pending ? taskStatus.completed : taskStatus.pending;
-      }
-    });
-  }
-
-  // Actually delete completed tasks
-  deleteCompletedTasks() {
-    const completedTasks = this.tasks.filter(task => task.status === taskStatus.completed);
-    completedTasks.forEach(task => {
-      this.taskService.deleteTask(task.taskId).subscribe({
-        next: () => {
-          console.log(`Task ${task.taskId} deleted successfully`);
-          this.tasks = this.tasks.filter(t => t.taskId !== task.taskId);
-        },
-        error: (error) => {
-          console.error(`Error deleting task ${task.taskId}:`, error);
+        
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logoutWhenTokenExpired();
         }
-      });
+      }
     });
   }
 
@@ -253,6 +240,10 @@ export class TaskListComponent implements OnInit {
             this.loadTasks();
           },
           error: (error) => {
+            // 401, token has expired
+            if (error.status == 401) {
+              this.logoutWhenTokenExpired();
+            }
             console.error(`Failed to create the new task...`, error);
           }
         });
@@ -275,6 +266,10 @@ export class TaskListComponent implements OnInit {
             this.loadTasks(); // Reload tasks after edited
           },
           error: (error) => {
+            // 401, token has expired
+            if (error.status == 401) {
+              this.logoutWhenTokenExpired();
+            }
             console.error(`Failed to update the task with taskId: ${result.taskId}...`, error);
           }
         });
@@ -290,14 +285,22 @@ export class TaskListComponent implements OnInit {
         this.separateTasks();
       },
       error: (error) => {
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logoutWhenTokenExpired();
+        }
         console.error(`Error deleting task ${task.taskId}:`, error);
       }
     });
   }
 
-  // TODO: Should logged out (remove the token from the localstorage) automatically if the token has expired
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  logoutWhenTokenExpired() {
+    this.logout();
+    showSnackbar(this.snackBar, 'Your session has expired, please login again.')
   }
 }
