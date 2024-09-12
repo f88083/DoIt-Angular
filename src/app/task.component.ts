@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { AuthService } from './auth/auth.service';
 import { Router } from '@angular/router';
+import { showSnackbar } from './shared/snackbar-utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-task-list',
@@ -144,7 +146,8 @@ export class TaskListComponent implements OnInit {
     private taskService: TaskService,
     private dialog: MatDialog,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   // Load tasks when the component is initialized
@@ -161,6 +164,12 @@ export class TaskListComponent implements OnInit {
         console.log('Tasks loaded and sorted:', this.tasks);
       },
       error: (error) => {
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logout();
+          this.router.navigate(['/login']);
+          showSnackbar(this.snackBar, 'Your login session has expired, please login again.');
+        }
         console.error('Error fetching tasks:', error);
       }
     });

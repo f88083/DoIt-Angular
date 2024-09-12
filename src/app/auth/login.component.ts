@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { showSnackbar } from '../shared/snackbar-utils';
 
 @Component({
   selector: 'app-login',
@@ -64,11 +65,7 @@ export class LoginComponent {
     this.authService.login(this.username, this.password).subscribe({
       next: (response) => {
         if (response.status === 200 && !!response.body.token) {
-          this.snackBar.open(
-            'Login successfully',
-            undefined,
-            { duration: this.duration * 1000 }
-          );
+          showSnackbar(this.snackBar, 'Login successfully');
           this.router.navigate(['/tasks']);
         } else {
           console.error('Login failed: Invalid response');
@@ -83,7 +80,7 @@ export class LoginComponent {
           );
         } else {
           console.error('Login failed', error);
-          // Handle other errors (show message to user)
+          // Handle other errors
         }
       }
     });
