@@ -63,24 +63,16 @@ export class LoginComponent {
     if (!this.username || !this.password) return;
 
     this.authService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        if (response.status === 200 && !!response.body.token) {
-          showSnackbar(this.snackBar, 'Login successfully');
-          this.router.navigate(['/tasks']);
-        } else {
-          console.error('Login failed: Invalid response');
-        }
+      next: () => {
+        showSnackbar(this.snackBar, 'Login successful');
+        this.router.navigate(['/tasks']);
       },
       error: (error) => {
         if (error.status === 401) {
-          this.snackBar.open(
-            'Login failed: Invalid username or password',
-            undefined,
-            { duration: this.duration * 1000 }
-          );
+          showSnackbar(this.snackBar, 'Login failed: Invalid username or password');
         } else {
           console.error('Login failed', error);
-          // Handle other errors
+          showSnackbar(this.snackBar, 'An error occurred during login');
         }
       }
     });

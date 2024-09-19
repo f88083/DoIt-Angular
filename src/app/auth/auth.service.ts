@@ -10,31 +10,27 @@ import { LoginResponse } from '../models/login-response.model';
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/v1/auth';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(!!this.getToken());
-  private token: string | null = null;
 
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }, {observe: 'response'}).pipe(
-      tap((response) => {
-        if (response.body?.token) {
-          this.token = response.body.token;
-          this.isAuthenticatedSubject.next(true);
-          // TODO: Use cookie
-          localStorage.setItem('token', response.body.token);
-        }
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }, { withCredentials: true }).pipe(
+      tap(() => {
+        this.isAuthenticatedSubject.next(true);
       })
     );
   }
 
-  logout(): void {
-    this.isAuthenticatedSubject.next(false);
-    this.token = null;
-    localStorage.removeItem('token');
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.isAuthenticatedSubject.next(false);
+      })
+    );
   }
 
   getToken(): string | null {
-    return this.token || localStorage.getItem('token');
+    return null;
   }
 
   isAuthenticated(): Observable<boolean> {

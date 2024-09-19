@@ -14,7 +14,7 @@ export class TaskService {
   constructor(private http: HttpClient) { }
 
   getAllTasks(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/getall`);
+    return this.http.get(`${this.apiUrl}/getall`, {withCredentials: true});
   }
 
   getTaskById(id: number): Observable<any> {
