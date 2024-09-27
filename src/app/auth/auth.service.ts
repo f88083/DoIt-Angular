@@ -9,7 +9,7 @@ import { LoginResponse } from '../models/login-response.model';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/v1/auth';
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(!!this.getToken());
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 
@@ -27,10 +27,6 @@ export class AuthService {
         this.isAuthenticatedSubject.next(false);
       })
     );
-  }
-
-  getToken(): string | null {
-    return null;
   }
 
   isAuthenticated(): Observable<boolean> {
