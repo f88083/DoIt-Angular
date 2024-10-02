@@ -16,7 +16,7 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(credentials: LoginCredentials): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials, { withCredentials: true }).pipe(
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(true);
       })
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.API_URL}/logout`, {}, { withCredentials: true }).pipe(
+    return this.http.post(`${this.API_URL}/logout`, null).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(false);
       })

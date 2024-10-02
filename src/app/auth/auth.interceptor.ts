@@ -18,5 +18,10 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
         return throwError(() => err);
     }
 
+    // Attach with credentials to request the resources
+    req = req.clone({
+        withCredentials: true
+    })
+
     return next(req).pipe(catchError(x => handleAuthError(x)));
 }
