@@ -1,30 +1,22 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpEvent, HttpInterceptor, HttpHandler, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { HttpRequest, HttpEvent, HttpErrorResponse, HttpHandlerFn } from '@angular/common/http';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { showSnackbar } from '../shared/snackbar-utils';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+    const router = inject(Router);
+    const snackBar = inject(MatSnackBar);
 
-    constructor(
-        private router: Router,
-        private snackBar: MatSnackBar
-    ) { }
-
-    private handleAuthError(err: HttpErrorResponse): Observable<any> {
-        //handle your auth error or rethrow
+    function handleAuthError(err: HttpErrorResponse): Observable<any> {
         if (err.status === 401 || err.status === 403) {
-            showSnackbar(this.snackBar, "Your session has expired, please log in again")
-            // Redirect to the login page
-            this.router.navigateByUrl(`/login`);
+            showSnackbar(snackBar, "Your session has expired, please log in again");
+            router.navigateByUrl(`/login`);
             return of(err.message);
         }
         return throwError(() => err);
     }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return next.handle(req).pipe(catchError(x => this.handleAuthError(x)));
-    }
+    return next(req).pipe(catchError(x => handleAuthError(x)));
 }
