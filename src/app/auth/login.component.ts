@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { showSnackbar } from '../shared/snackbar-utils';
+import { LoginCredentials } from '../models/login-credentials.model';
 
 @Component({
   selector: 'app-login',
@@ -16,14 +17,14 @@ import { showSnackbar } from '../shared/snackbar-utils';
       <h2>Login</h2>
       <form (ngSubmit)="onSubmit()">
         <mat-form-field>
-          <input matInput placeholder="Username" [(ngModel)]="username" name="username" required>
-          <mat-error *ngIf="!username">username is required</mat-error>
+          <input matInput placeholder="Username" [(ngModel)]="loginCredentials.username" name="username" required>
+          <mat-error *ngIf="!loginCredentials.username">username is required</mat-error>
         </mat-form-field>
         <mat-form-field>
-          <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
-          <mat-error *ngIf="!password">password is required</mat-error>
+          <input matInput type="password" placeholder="Password" [(ngModel)]="loginCredentials.password" name="password" required>
+          <mat-error *ngIf="!loginCredentials.password">password is required</mat-error>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!username || !password">Login</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!loginCredentials.username || !loginCredentials.password">Login</button>
       </form>
     </div>
   `,
@@ -48,8 +49,10 @@ import { showSnackbar } from '../shared/snackbar-utils';
   ]
 })
 export class LoginComponent {
-  username: string = '';
-  password: string = '';
+  loginCredentials: LoginCredentials = {
+    username: '',
+    password: ''
+  };
   duration: number = 3; // Snack bar show duration
 
   constructor(
@@ -60,9 +63,9 @@ export class LoginComponent {
 
   onSubmit() {
     // Prevent invalid login
-    if (!this.username || !this.password) return;
+    if (!this.loginCredentials.username || !this.loginCredentials.password) return;
 
-    this.authService.login(this.username, this.password).subscribe({
+    this.authService.login(this.loginCredentials).subscribe({
       next: () => {
         showSnackbar(this.snackBar, 'Login successful');
         this.router.navigate(['/tasks']);

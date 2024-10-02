@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { LoginResponse } from '../models/login-response.model';
 import { GlobalConstants } from '../shared/global-constants';
+import { LoginCredentials } from '../models/login-credentials.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { username, password }, { withCredentials: true }).pipe(
+  login(credentials: LoginCredentials): Observable<any> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials, { withCredentials: true }).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(true);
       })
