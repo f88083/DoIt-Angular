@@ -9,13 +9,13 @@ import { GlobalConstants } from '../shared/global-constants';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = GlobalConstants.LOCAL_API_BASE_URL + GlobalConstants.V1_AUTH_URL;
+  private readonly API_URL = GlobalConstants.LOCAL_API_BASE_URL + GlobalConstants.V1_AUTH_URL;
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }, { withCredentials: true }).pipe(
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { username, password }, { withCredentials: true }).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(true);
       })
@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+    return this.http.post(`${this.API_URL}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.isAuthenticatedSubject.next(false);
       })
