@@ -10,7 +10,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     const snackBar = inject(MatSnackBar);
 
     function handleAuthError(err: HttpErrorResponse): Observable<any> {
-        if (err.status === 401 || err.status === 403) {
+        if (err.status === 403) {
             showSnackbar(snackBar, "Your session has expired, please log in again");
             router.navigateByUrl(`/login`);
             return of(err.message);
