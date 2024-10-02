@@ -11,27 +11,15 @@ import { LoginCredentials } from '../models/login-credentials.model';
 })
 export class AuthService {
   private readonly API_URL = GlobalConstants.LOCAL_API_BASE_URL + GlobalConstants.V1_AUTH_URL;
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) { }
 
   login(credentials: LoginCredentials): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
-      tap(() => {
-        this.isAuthenticatedSubject.next(true);
-      })
-    );
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials);
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.API_URL}/logout`, null).pipe(
-      tap(() => {
-        this.isAuthenticatedSubject.next(false);
-      })
-    );
+    return this.http.post(`${this.API_URL}/logout`, null);
   }
 
-  isAuthenticated(): Observable<boolean> {
-    return this.isAuthenticatedSubject.asObservable();
-  }
 }
