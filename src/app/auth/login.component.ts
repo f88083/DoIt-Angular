@@ -71,12 +71,7 @@ export class LoginComponent {
         this.router.navigate(['/tasks']);
       },
       error: (error) => {
-        if (error.status === 401) {
-          showSnackbar(this.snackBar, 'Login failed: Invalid username or password');
-        } else {
-          console.error('Login failed', error);
-          showSnackbar(this.snackBar, 'An error occurred during login');
-        }
+        console.error(`Error occured on login: ${error}`);
       }
     });
   }

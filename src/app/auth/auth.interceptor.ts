@@ -10,6 +10,15 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     const snackBar = inject(MatSnackBar);
 
     function handleAuthError(err: HttpErrorResponse): Observable<any> {
+        if (err.status === 401) {
+            // Login page encounters 401
+            if (req.url.includes('/login')) {
+                showSnackbar(snackBar, 'Login failed: Invalid username or password');
+                router.navigateByUrl(`/login`);
+            } else { // Other pages
+                showSnackbar(snackBar, 'Unauthorized action');
+            }
+        }
         if (err.status === 403) {
             showSnackbar(snackBar, "Your session has expired, please log in again");
             router.navigateByUrl(`/login`);
