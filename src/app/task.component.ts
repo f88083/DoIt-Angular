@@ -9,6 +9,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { AuthService } from './auth/auth.service';
+import { Router } from '@angular/router';
+import { showSnackbar } from './shared/snackbar-utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-task-list',
@@ -16,7 +20,10 @@ import { MatExpansionModule } from '@angular/material/expansion';
     <div class="todo-container">
       <div class="header">
         <h1>Do It!</h1>
-        <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
+        <div>
+          <button class="create-button" (click)="openCreateTaskDialog()">+ New Task</button>
+          <button mat-button (click)="logout()">Logout</button>
+        </div>
       </div>
       <ul class="task-list">
         <li *ngFor="let task of activeTasks" class="task-item">
@@ -137,7 +144,10 @@ export class TaskListComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   // Load tasks when the component is initialized
@@ -154,6 +164,10 @@ export class TaskListComponent implements OnInit {
         console.log('Tasks loaded and sorted:', this.tasks);
       },
       error: (error) => {
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logoutWhenTokenExpired();
+        }
         console.error('Error fetching tasks:', error);
       }
     });
@@ -194,23 +208,12 @@ export class TaskListComponent implements OnInit {
         console.error('Error updating task:', error);
         // Revert the change if the update fails
         task.status = task.status === taskStatus.pending ? taskStatus.completed : taskStatus.pending;
-      }
-    });
-  }
-
-  // Actually delete completed tasks
-  deleteCompletedTasks() {
-    const completedTasks = this.tasks.filter(task => task.status === taskStatus.completed);
-    completedTasks.forEach(task => {
-      this.taskService.deleteTask(task.taskId).subscribe({
-        next: () => {
-          console.log(`Task ${task.taskId} deleted successfully`);
-          this.tasks = this.tasks.filter(t => t.taskId !== task.taskId);
-        },
-        error: (error) => {
-          console.error(`Error deleting task ${task.taskId}:`, error);
+        
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logoutWhenTokenExpired();
         }
-      });
+      }
     });
   }
 
@@ -237,6 +240,10 @@ export class TaskListComponent implements OnInit {
             this.loadTasks();
           },
           error: (error) => {
+            // 401, token has expired
+            if (error.status == 401) {
+              this.logoutWhenTokenExpired();
+            }
             console.error(`Failed to create the new task...`, error);
           }
         });
@@ -259,6 +266,10 @@ export class TaskListComponent implements OnInit {
             this.loadTasks(); // Reload tasks after edited
           },
           error: (error) => {
+            // 401, token has expired
+            if (error.status == 401) {
+              this.logoutWhenTokenExpired();
+            }
             console.error(`Failed to update the task with taskId: ${result.taskId}...`, error);
           }
         });
@@ -274,8 +285,29 @@ export class TaskListComponent implements OnInit {
         this.separateTasks();
       },
       error: (error) => {
+        // 401, token has expired
+        if (error.status == 401) {
+          this.logoutWhenTokenExpired();
+        }
         console.error(`Error deleting task ${task.taskId}:`, error);
       }
     });
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Logout failed', error);
+        showSnackbar(this.snackBar, 'An error occurred during logout');
+      }
+    });
+  }
+
+  logoutWhenTokenExpired() {
+    this.logout();
+    showSnackbar(this.snackBar, 'Your session has expired, please login again.')
   }
 }

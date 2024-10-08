@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
 
 @NgModule({
     // ...
-    imports: [
-
-    ],
-    providers: [provideHttpClient()],
+    imports: [],
+    providers: [],
     // ...
 })
 export class AppModule { }

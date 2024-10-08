@@ -14,22 +14,22 @@ export class TaskService {
   constructor(private http: HttpClient) { }
 
   getAllTasks(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/getall`);
+    return this.http.get(`${this.apiUrl}/getall`, {withCredentials: true});
   }
 
   getTaskById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/${id}`, {withCredentials: true});
   }
 
   createTask(TaskCreateRequest: TaskCreateRequest): Observable<any> {
-    return this.http.post<Task>(this.apiUrl, TaskCreateRequest);
+    return this.http.post<Task>(this.apiUrl, TaskCreateRequest, {withCredentials: true});
   }
 
   updateTask(id: number, task: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, task);
+    return this.http.put(`${this.apiUrl}/${id}`, task, { withCredentials: true });
   }
 
   deleteTask(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, {withCredentials: true});
   }
 }
